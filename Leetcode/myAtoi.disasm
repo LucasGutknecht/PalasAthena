@@ -1,0 +1,82 @@
+
+myAtoi.o:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00000000 <myAtoi>:
+   0:	55                   	push   ebp
+   1:	89 e5                	mov    ebp,esp
+   3:	53                   	push   ebx
+   4:	56                   	push   esi
+   5:	8b 75 08             	mov    esi,DWORD PTR [ebp+0x8]
+
+00000008 <.skip_spaces>:
+   8:	8a 06                	mov    al,BYTE PTR [esi]
+   a:	3c 20                	cmp    al,0x20
+   c:	75 03                	jne    11 <.after_spaces>
+   e:	46                   	inc    esi
+   f:	eb f7                	jmp    8 <.skip_spaces>
+
+00000011 <.after_spaces>:
+  11:	31 db                	xor    ebx,ebx
+  13:	8a 06                	mov    al,BYTE PTR [esi]
+  15:	3c 2b                	cmp    al,0x2b
+  17:	74 09                	je     22 <.consume_plus>
+  19:	3c 2d                	cmp    al,0x2d
+  1b:	75 06                	jne    23 <.parse_start>
+  1d:	b3 01                	mov    bl,0x1
+  1f:	46                   	inc    esi
+  20:	eb 01                	jmp    23 <.parse_start>
+
+00000022 <.consume_plus>:
+  22:	46                   	inc    esi
+
+00000023 <.parse_start>:
+  23:	31 c0                	xor    eax,eax
+
+00000025 <.parse_loop>:
+  25:	0f b6 16             	movzx  edx,BYTE PTR [esi]
+  28:	83 fa 30             	cmp    edx,0x30
+  2b:	72 3a                	jb     67 <.finish_parse>
+  2d:	83 fa 39             	cmp    edx,0x39
+  30:	77 35                	ja     67 <.finish_parse>
+  32:	83 ea 30             	sub    edx,0x30
+  35:	89 c1                	mov    ecx,eax
+  37:	81 f9 cc cc cc 0c    	cmp    ecx,0xccccccc
+  3d:	77 1a                	ja     59 <.overflow_pos>
+  3f:	72 10                	jb     51 <.mul_add>
+  41:	84 db                	test   bl,bl
+  43:	74 07                	je     4c <.check_pos_last>
+  45:	83 fa 08             	cmp    edx,0x8
+  48:	77 16                	ja     60 <.overflow_neg>
+  4a:	eb 05                	jmp    51 <.mul_add>
+
+0000004c <.check_pos_last>:
+  4c:	83 fa 07             	cmp    edx,0x7
+  4f:	77 08                	ja     59 <.overflow_pos>
+
+00000051 <.mul_add>:
+  51:	6b c0 0a             	imul   eax,eax,0xa
+  54:	01 d0                	add    eax,edx
+  56:	46                   	inc    esi
+  57:	eb cc                	jmp    25 <.parse_loop>
+
+00000059 <.overflow_pos>:
+  59:	b8 ff ff ff 7f       	mov    eax,0x7fffffff
+  5e:	eb 0d                	jmp    6d <.done>
+
+00000060 <.overflow_neg>:
+  60:	b8 00 00 00 80       	mov    eax,0x80000000
+  65:	eb 06                	jmp    6d <.done>
+
+00000067 <.finish_parse>:
+  67:	84 db                	test   bl,bl
+  69:	74 02                	je     6d <.done>
+  6b:	f7 d8                	neg    eax
+
+0000006d <.done>:
+  6d:	5e                   	pop    esi
+  6e:	5b                   	pop    ebx
+  6f:	c9                   	leave
+  70:	c3                   	ret
