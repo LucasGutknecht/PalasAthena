@@ -1,5 +1,5 @@
 ambiente/
 *.py
 radare2/
-radare2/libr/
+*.c
 leetcode/
